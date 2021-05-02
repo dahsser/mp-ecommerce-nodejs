@@ -99,6 +99,11 @@ app.get('/mercadopago/webhook', function (request, response) {
   console.log(payload)
   response.redirect(`/payment/status?${qs.encode(payload)}`);
 });
+app.post('/mercadopago/webhook', function(request, response){
+  console.log("NOTIFICATION 2!!!!");
+  console.log(JSON.stringify(request.body))
+  response.json({success: true})
+})
 app.get('/payment/status', function (req, res) {
   res.render('payment-status');
 });
