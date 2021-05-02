@@ -4,7 +4,7 @@ const port = process.env.PORT || 3000;
 require('dotenv').config();
 const BASE_URL = process.env.BASE_URL;
 const app = express();
-
+const qs = require('querystring');
 const mercadopago = require('mercadopago');
 
 mercadopago.configure({
@@ -32,7 +32,7 @@ app.get('/detail', function (req, res) {
 
 app.get('/pay', function (req, res) {});
 app.post('/create-preference', (req, res) => {
-  console.log("req", req.body)
+  console.log('req', req.body);
   const preference = {
     items: [
       {
@@ -70,7 +70,7 @@ app.post('/create-preference', (req, res) => {
       excluded_payment_types: [{ id: 'atm' }],
       installments: 6,
     },
-    notification_url: `${BASE_URL}/mercadopago/webhook`
+    notification_url: `${BASE_URL}/mercadopago/webhook`,
   };
   mercadopago.preferences
     .create(preference)
@@ -83,13 +83,24 @@ app.post('/create-preference', (req, res) => {
 });
 
 app.get('/mercadopago/webhook', function (request, response) {
-  const payload = {
-    Payment: request.query.payment_id,
-    Status: request.query.status,
-    MerchantOrder: request.query.merchant_order_id,
-  };
-  console.log('request.query', request.query);
-  response.json(payload);
+  console.log("MERCADO PAGO WEBHOOK!!!!!")
+  console.log(JSON.stringify(request.query))
+  const payload = JSON.parse(
+    JSON.stringify({
+      payment: request.query.payment_id,
+      status: request.query.status,
+      merchanOrder: request.query.merchant_order_id,
+      paymentType: request.query.payment_type,
+      preference: request.query.preference_id,
+      externalReference: request.query.external_reference,
+      collectionId: request.query.collection_id,
+    })
+  );
+  console.log(payload)
+  response.redirect(`/payment/status?${qs.encode(payload)}`);
+});
+app.get('/payment/status', function (req, res) {
+  res.render('payment-status');
 });
 
 app.listen(port);

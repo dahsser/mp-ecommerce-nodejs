@@ -1,0 +1,35 @@
+<div class="result" role="main">
+  <h3>Resultado del pago</h3>
+  <div id="status"></div>
+  <div id="payment_type"></div>
+  <div id="external_reference"></div>
+  <div id="collection_id"></div>
+</div>
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const status = params.get('status')
+  const statusDOM = document.getElementById('status');
+  statusDOM.style.fontWeight = "700"
+  if (status == 'approved') {
+    statusDOM.innerText = "Pago aprobado!"
+    statusDOM.style.color = "green"
+    const paymentDOM = document.getElementById('payment_type');
+    const externalDOM = document.getElementById('external_reference');
+    const collectionDOM = document.getElementById('collection_id');
+    paymentDOM.innerText = `Payment Type: ${params.get('paymentType')}`
+    externalDOM.innerText = `External Reference: ${params.get('externalReference')}`
+    collectionDOM.innerText = `Collection ID: ${params.get('collectionId')}`
+  } else if (status == 'pending' || status == 'in_process') {
+    statusDOM.innerText = "Pago pendiente..."
+  } else {
+    statusDOM.innerText = "Pago fallido :("
+    statusDOM.style.color = "red"
+  }
+  
+</script>
+
+<style>
+  .result{
+    padding: 10px;
+  }
+</style>
